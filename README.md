@@ -2,6 +2,10 @@
 
 Welcome to the Online Chess Game, a modern and sleek platform to play chess with friends or other players online. This project is built using cutting-edge technologies, ensuring a smooth and responsive gaming experience.
 
+## Try it out
+
+https://chess-next.app/
+
 ## 🚀 Features
 
 Real-time Chess Gameplay: Play against other players online with real-time updates.
