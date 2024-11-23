@@ -62,13 +62,16 @@ export const Board = ({
         ).map(([row, rowIndex], displayedRowIndex) => {
           return (
             <div key={`row-${rowIndex}`} className="flex flex-row">
-              {row.map((cell, columnIndex) => (
+              {zip(
+                row.toReversed(),
+                row.map((_, columnIndex) => columnIndex).toReversed()
+              ).map(([cell, columnIndex], displayedColumnIndex) => (
                 <CellComponent
-                  key={`cell-${rowIndex}-${columnIndex}`}
+                  key={`cell-${displayedColumnIndex}-${displayedRowIndex}`}
                   rowIndex={rowIndex}
                   columnIndex={columnIndex}
                   displayedRowIndex={displayedRowIndex}
-                  displayedColumnIndex={columnIndex}
+                  displayedColumnIndex={displayedColumnIndex}
                   cell={cell as CellType}
                 />
               ))}

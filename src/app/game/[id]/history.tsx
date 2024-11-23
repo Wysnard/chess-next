@@ -4,12 +4,7 @@ import {
   SidebarMenu,
 } from "../../../components/ui/sidebar";
 import { Doc } from "../../../../convex/_generated/dataModel";
-import {
-  fromIdToPiece,
-  isBlackPiece,
-  isWhitePiece,
-  Piece,
-} from "../../../engine/pieces";
+import { fromIdToPiece, Piece } from "../../../engine/pieces";
 
 const fromIndexToLetter = (index: number) => {
   return String.fromCharCode(97 + index);

@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import {
   DndContext,
@@ -111,10 +118,10 @@ const GameManagerCell = ({
         />
       )}
       {isPossibleMove && isPiece(cell) && (
-        <Circle className="text-primary/70 font-extrabold absolute h-16 w-16 z-10" />
+        <Circle className="text-primary/80 font-extrabold absolute ~@[2rem]/[6rem]:~h-8/20 ~@[2rem]/[6rem]:~w-8/20 z-10" />
       )}
       {isPossibleMove && !isPiece(cell) && (
-        <Dot className="text-primary/70 font-extrabold absolute h-24 w-24 z-10" />
+        <Dot className="text-primary/80 font-extrabold absolute ~@[2rem]/[6rem]:~h-20/24 ~@[4rem]/[6rem]:~w-20/24 z-10" />
       )}
     </Cell>
   );
@@ -125,7 +132,7 @@ export type GameManagerProps = {
 };
 
 export default function GameManager({ preloadedGame }: GameManagerProps) {
-  const moveAudio = useMemo(() => new Audio("/move-self.mp3"), []);
+  const moveAudioRef = useRef<HTMLAudioElement>(null);
   const [active, setActive] = useState<DragStartEvent["active"] | null>(null);
   const { currentUser } = useCurrentUser();
   const game = usePreloadedQuery(preloadedGame);
@@ -149,12 +156,9 @@ export default function GameManager({ preloadedGame }: GameManagerProps) {
     join({ gameId: game._id });
   }, [game, currentUser, join]);
 
-  useEffect(() => {
-    console.log(game);
-  }, [game]);
-
   return (
     <SidebarProvider>
+      <audio src="/move-self.mp3" ref={moveAudioRef} />
       <SidebarInset>
         <div className="flex flex-1 items-center justify-center rounded-xl bg-muted/70 p-4">
           <GameContext.Provider
@@ -184,7 +188,7 @@ export default function GameManager({ preloadedGame }: GameManagerProps) {
                       event.over?.data.current?.columnIndex,
                     ],
                   });
-                  moveAudio.play();
+                  moveAudioRef.current?.play();
                 } catch (error) {
                   if (!(error instanceof ConvexError)) return;
                   toast.error(error.data.message, {

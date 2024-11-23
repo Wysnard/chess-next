@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { Preloaded, usePreloadedQuery, useQuery } from "convex/react";
 import Link from "next/link";
 import { api } from "../../../convex/_generated/api";
 import { Doc, Id } from "../../../convex/_generated/dataModel";
@@ -63,18 +63,18 @@ const GameCard = ({ game }: GameCardProps) => {
   );
 };
 
-const LoadingGameCard = () => {
-  return <div className="aspect-square rounded-xl bg-muted animate-pulse" />;
+export type GamesListProps = {
+  preloadedGames: Preloaded<typeof api.games.list>;
 };
 
-export default function GamesList() {
-  const games = useQuery(api.games.list);
+export default function GamesList({ preloadedGames }: GamesListProps) {
+  const games = usePreloadedQuery(preloadedGames);
 
   return (
     <div className="grid auto-rows-min gap-4 md:grid-cols-5">
-      {games
-        ? games.map((game) => <GameCard key={game._id} game={game} />)
-        : Array.from({ length: 20 }).map((_, i) => <LoadingGameCard key={i} />)}
+      {games.map((game) => (
+        <GameCard key={game._id} game={game} />
+      ))}
     </div>
   );
 }
