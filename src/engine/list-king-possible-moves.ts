@@ -32,10 +32,5 @@ export const listKingPossibleMoves = (
     }
   }
 
-  // if (isKingSideCastlingPossible(game, piece as King))
-  //   possibleMoves.push([rowIndex, 1]);
-  // if (isQueenSideCastlingPossible(game, piece as King))
-  //   possibleMoves.push([rowIndex, 6]);
-
   return possibleMoves;
 };

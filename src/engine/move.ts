@@ -15,5 +15,8 @@ export const move = (
     state: isCheckedMate(newGame, newGame.turn % 2 === 0 ? "k" : "K")
       ? "ended"
       : newGame.state,
+    winner: isCheckedMate(newGame, newGame.turn % 2 === 0 ? "k" : "K")
+      ? newGame.players[newGame.turn % newGame.players.length]
+      : undefined,
   };
 };

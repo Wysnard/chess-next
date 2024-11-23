@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 import { forwardRef } from "react";
 
 export type CellProps = {
@@ -12,8 +12,8 @@ const Cell = forwardRef<
   return (
     <div
       ref={ref}
-      className={clsx(
-        `h-full w-full aspect-square flex items-center justify-center relative`,
+      className={twMerge(
+        `@container h-full w-full aspect-square flex items-center justify-center relative`,
         className
       )}
       {...props}

@@ -4,6 +4,7 @@ import schema from "./schema";
 import { api } from "./_generated/api";
 import { Board, Piece, STARTING_BOARD } from "../src/engine/pieces";
 import { Id } from "./_generated/dataModel";
+import { ConvexError } from "convex/values";
 
 const insert2Users = async (t: TestConvex<typeof schema>) => {
   await t.run(async (ctx) => {
@@ -99,6 +100,34 @@ const play_a_piece_that_ends_the_game: [Board, Piece, [number, number]][] = [
     ],
     "r1",
     [7, 0],
+  ],
+  [
+    [
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "k", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["r1", "", "", "", "", "", "", ""],
+      ["P1", "P2", "", "", "", "", "", "r2"],
+      ["K", "", "", "", "", "", "", ""],
+    ],
+    "r2",
+    [7, 7],
+  ],
+  [
+    [
+      ["", "r2", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "k", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", "q"],
+      ["r1", "", "", "", "", "", "", ""],
+      ["P1", "", "", "", "", "", "", ""],
+      ["K", "", "", "", "", "", "", ""],
+    ],
+    "q",
+    [7, 7],
   ],
 ];
 
@@ -201,5 +230,73 @@ test.each(play_a_piece_cases_with_invalid_moves)(
     await expect(
       asAuth1.mutation(api.games.play, { gameId, piece, to })
     ).rejects.toThrow();
+  }
+);
+
+const play_a_piece_that_puts_the_player_in_check: [
+  Board,
+  Piece,
+  [number, number],
+  Piece[],
+][] = [
+  [
+    [
+      ["r1", "n1", "", "k", "q", "b2", "n2", "r2"],
+      ["p1", "p2", "p3", "b1", "p5", "p6", "p7", "p8"],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "R1", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"],
+      ["", "N1", "B1", "K", "Q", "B2", "N2", "R2"],
+    ],
+    "b1",
+    [2, 4],
+    ["R1"],
+  ],
+  [
+    [
+      ["k", "", "b1", "R1", "", "", "n2", "r2"],
+      ["p1", "p2", "", "", "p5", "p6", "p7", "p8"],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"],
+      ["", "N1", "B1", "K", "Q", "B2", "N2", "R2"],
+    ],
+    "b1",
+    [1, 3],
+    ["R1"],
+  ],
+];
+
+test.each(play_a_piece_that_puts_the_player_in_check)(
+  "play a piece that puts the player in check",
+  async (board, piece, to, checkFrom) => {
+    const t = convexTest(schema);
+    await insert2Users(t);
+    const asAuth1 = t.withIdentity({ subject: "test1" });
+    const gameId = await t.run(async (ctx) => {
+      return ctx.db.insert("games", {
+        board,
+        players: [],
+        turn: 0,
+        state: "playing",
+        history: [],
+      });
+    });
+    await insertUsersInGame(t, gameId);
+    await expect(
+      asAuth1.mutation(api.games.play, { gameId, piece, to })
+    ).rejects.toThrow(
+      new ConvexError({
+        reason: "InCheckAfterMove",
+        message: "You are in check after this move",
+        details: {
+          checkFrom,
+        },
+      })
+    );
   }
 );

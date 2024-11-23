@@ -13,6 +13,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import NavHeader from "./nav-header";
+import AppSidebarTrigger from "./app-sidebar-trigger";
 
 export type AppSidebarData = {
   navMain: NavMainProps["items"];
@@ -110,6 +111,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
+        <AppSidebarTrigger />
         <NavUser />
       </SidebarFooter>
       <SidebarRail />

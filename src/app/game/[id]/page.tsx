@@ -14,7 +14,7 @@ export default async function GamePage({
   let game = await fetchQuery(api.games.get, { gameId: id as Id<"games"> });
   const token = await getAuthToken();
   const currentUser = await fetchQuery(api.users.current, {}, { token });
-  if (game.state !== "waiting" && !game.players.includes(currentUser!._id)) {
+  if (game.state === "waiting" && !game.players.includes(currentUser!._id)) {
     await fetchMutation(
       api.games.join,
       {

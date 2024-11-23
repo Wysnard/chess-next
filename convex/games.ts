@@ -1,7 +1,7 @@
 import z from "zod";
 import { shuffle } from "radash";
 import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { NoOp } from "convex-helpers/server/customFunctions";
 import { zCustomMutation, zid } from "convex-helpers/server/zod";
 import {
@@ -13,6 +13,7 @@ import {
 import { move } from "../src/engine/move";
 import { getCurrentUserOrThrow } from "./users";
 import { dictAllPossibleMoves } from "../src/engine/dict-all-possible-moves";
+import { checkFrom } from "../src/engine/check-from";
 
 const zMutation = zCustomMutation(mutation, NoOp);
 
@@ -107,28 +108,55 @@ export const play = zMutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("You are not authenticated");
+    if (!identity)
+      throw new ConvexError({
+        reason: "NotAuthenticated",
+        message: "You are not authenticated",
+      });
 
     const game = await ctx.db.get(args.gameId);
 
-    if (!game) throw new Error("Game not found");
+    if (!game)
+      throw new ConvexError({
+        reason: "GameNotFound",
+        message: `Game ${args.gameId} not found`,
+      });
     if (game.state !== "playing")
-      throw new Error(`Game ${args.gameId} is not playing`);
+      throw new ConvexError({
+        reason: "GameNotPlaying",
+        message: `Game ${args.gameId} is not playing`,
+      });
 
     const user = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("externalId"), identity.subject))
       .first();
-    if (!user) throw new Error(`User ${identity.subject} not found`);
+    if (!user)
+      throw new ConvexError({
+        reason: "UserNotFound",
+        message: `User ${identity.subject} not found`,
+      });
 
     if (!game.players.find((playerId) => playerId === user._id))
-      throw new Error(`User ${user._id} is not in game ${args.gameId}`);
+      throw new ConvexError({
+        reason: "UserNotInGame",
+        message: `User ${user._id} is not in game ${args.gameId}`,
+      });
     if (game.players[game.turn % game.players.length] !== user._id)
-      throw new Error(`It is not your turn to play`);
+      throw new ConvexError({
+        reason: "NotYourTurn",
+        message: `It is not your turn to play`,
+      });
     if (game.turn % 2 === 0 && isBlackPiece(args.piece))
-      throw new Error(`It is white player's turn`);
+      throw new ConvexError({
+        reason: "WhiteTurn",
+        message: `It is white player's turn`,
+      });
     if (game.turn % 2 === 1 && isWhitePiece(args.piece))
-      throw new Error(`It is black player's turn`);
+      throw new ConvexError({
+        reason: "BlackTurn",
+        message: `It is black player's turn`,
+      });
 
     const allPossibleMoves = dictAllPossibleMoves(game);
     if (
@@ -136,9 +164,29 @@ export const play = zMutation({
         (move) => move[0] === args.to[0] && move[1] === args.to[1]
       )
     )
-      throw new Error(`Piece ${args.piece} cannot move to ${args.to}`);
+      throw new ConvexError({
+        reason: "InvalidMove",
+        message: `Piece ${args.piece} cannot move to ${args.to}`,
+        details: {
+          piece: args.piece,
+          possibleMoves: allPossibleMoves[args.piece],
+        },
+      });
 
-    ctx.db.replace(args.gameId, move(game, args.piece, args.to));
+    const newGame = move(game, args.piece, args.to);
+    const check = checkFrom(newGame, game.turn % 2 === 0 ? "k" : "K");
+
+    if (newGame.state === "playing" && check.length > 0) {
+      throw new ConvexError({
+        reason: "InCheckAfterMove",
+        message: "You are in check after this move",
+        details: {
+          checkFrom: check,
+        },
+      });
+    }
+
+    return ctx.db.replace(args.gameId, newGame);
   },
 });
 

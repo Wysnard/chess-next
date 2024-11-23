@@ -19,10 +19,20 @@ export const listPawnPossibleMoves = (
   if (isEmpty(game.board[rowIndex + direction][columnIndex] as Cell)) {
     possibleMoves.push([rowIndex + direction, columnIndex]);
   }
-  if (isBlackPiece(piece) && rowIndex === 6) {
+  if (
+    isBlackPiece(piece) &&
+    rowIndex === 6 &&
+    isEmpty(game.board[rowIndex + direction][columnIndex] as Cell) &&
+    isEmpty(game.board[rowIndex + 2 * direction][columnIndex] as Cell)
+  ) {
     possibleMoves.push([rowIndex + 2 * direction, columnIndex]);
   }
-  if (isWhitePiece(piece) && rowIndex === 1) {
+  if (
+    isWhitePiece(piece) &&
+    rowIndex === 1 &&
+    isEmpty(game.board[rowIndex + direction][columnIndex] as Cell) &&
+    isEmpty(game.board[rowIndex + 2 * direction][columnIndex] as Cell)
+  ) {
     possibleMoves.push([rowIndex + 2 * direction, columnIndex]);
   }
   if (

@@ -9,6 +9,4 @@ export default async function GamePage() {
   await fetchMutation(api.games.join, { gameId }, { token: token! });
 
   redirect(`/game/${gameId}`);
-
-  return null;
 }

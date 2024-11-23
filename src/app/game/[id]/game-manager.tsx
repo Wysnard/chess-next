@@ -10,6 +10,8 @@ import {
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Dot, Circle } from "lucide-react";
+import { toast } from "sonner";
+import { ConvexError } from "convex/values";
 import { api } from "../../../../convex/_generated/api";
 import { useCurrentUser } from "../../../hooks/use-current-user";
 import { Id } from "../../../../convex/_generated/dataModel";
@@ -23,6 +25,8 @@ import { dictAllPossibleMoves } from "../../../engine/dict-all-possible-moves";
 import Cell from "../../../components/chess/cell";
 import Piece, { PieceProps } from "../../../components/chess/piece";
 import { SidebarInset, SidebarProvider } from "../../../components/ui/sidebar";
+import { move } from "../../../engine/move";
+import { isWhitePlayer } from "../../../engine/player";
 
 export type GameContextType = {
   active: DragStartEvent["active"] | null;
@@ -49,6 +53,7 @@ const GameManagerPiece = ({ id, rowIndex, columnIndex }: PieceProps) => {
   });
   const style = {
     transform: CSS.Translate.toString(transform),
+    touchAction: "none",
   };
 
   return (
@@ -63,10 +68,16 @@ const GameManagerPiece = ({ id, rowIndex, columnIndex }: PieceProps) => {
   );
 };
 
-const GameManagerCell = ({ rowIndex, columnIndex, cell }: BoardCellProps) => {
+const GameManagerCell = ({
+  rowIndex,
+  columnIndex,
+  displayedRowIndex,
+  displayedColumnIndex,
+  cell,
+}: BoardCellProps) => {
   const { possibleMoves: possibleMovesDict } = useGameContext();
   const { isOver, setNodeRef, active } = useDroppable({
-    id: `cell-${rowIndex}-${columnIndex}`,
+    id: `cell-${displayedRowIndex}-${displayedColumnIndex}`,
     data: {
       rowIndex,
       columnIndex,
@@ -83,7 +94,7 @@ const GameManagerCell = ({ rowIndex, columnIndex, cell }: BoardCellProps) => {
     <Cell
       ref={setNodeRef}
       className={`${
-        (rowIndex + columnIndex) % 2 === 0
+        (displayedRowIndex + displayedColumnIndex) % 2 === 0
           ? isOver
             ? "bg-orange-400"
             : "bg-orange-200"
@@ -100,10 +111,10 @@ const GameManagerCell = ({ rowIndex, columnIndex, cell }: BoardCellProps) => {
         />
       )}
       {isPossibleMove && isPiece(cell) && (
-        <Circle className="text-primary/70 font-extrabold absolute h-16 w-16" />
+        <Circle className="text-primary/70 font-extrabold absolute h-16 w-16 z-10" />
       )}
       {isPossibleMove && !isPiece(cell) && (
-        <Dot className="text-primary/70 font-extrabold absolute h-28 w-28" />
+        <Dot className="text-primary/70 font-extrabold absolute h-24 w-24 z-10" />
       )}
     </Cell>
   );
@@ -114,6 +125,7 @@ export type GameManagerProps = {
 };
 
 export default function GameManager({ preloadedGame }: GameManagerProps) {
+  const moveAudio = useMemo(() => new Audio("/move-self.mp3"), []);
   const [active, setActive] = useState<DragStartEvent["active"] | null>(null);
   const { currentUser } = useCurrentUser();
   const game = usePreloadedQuery(preloadedGame);
@@ -124,15 +136,8 @@ export default function GameManager({ preloadedGame }: GameManagerProps) {
         gameId: args.gameId,
       });
       if (!currentValue) return;
-      const newBoard = currentValue.board.map((row) =>
-        row.map((cell) => (cell === args.piece ? "" : cell))
-      );
-      newBoard[args.to[0]][args.to[1]] = args.piece;
-      localStore.setQuery(
-        api.games.get,
-        { gameId: args.gameId },
-        { ...game, board: newBoard }
-      );
+      const newGame = move(currentValue, args.piece, args.to);
+      localStore.setQuery(api.games.get, { gameId: args.gameId }, newGame);
     }
   );
   const possibleMovesDict = useMemo(() => dictAllPossibleMoves(game), [game]);
@@ -143,6 +148,10 @@ export default function GameManager({ preloadedGame }: GameManagerProps) {
     if (game.state !== "waiting") return;
     join({ gameId: game._id });
   }, [game, currentUser, join]);
+
+  useEffect(() => {
+    console.log(game);
+  }, [game]);
 
   return (
     <SidebarProvider>
@@ -166,18 +175,30 @@ export default function GameManager({ preloadedGame }: GameManagerProps) {
                 )
                   return;
 
-                await play({
-                  gameId: game._id,
-                  piece: event.active.id as PieceType,
-                  to: [
-                    event.over?.data.current?.rowIndex,
-                    event.over?.data.current?.columnIndex,
-                  ],
-                });
+                try {
+                  await play({
+                    gameId: game._id,
+                    piece: event.active.id as PieceType,
+                    to: [
+                      event.over?.data.current?.rowIndex,
+                      event.over?.data.current?.columnIndex,
+                    ],
+                  });
+                  moveAudio.play();
+                } catch (error) {
+                  if (!(error instanceof ConvexError)) return;
+                  toast.error(error.data.message, {
+                    position: "top-center",
+                  });
+                }
               }}
             >
               <div className="w-full max-w-[90vh] aspect-square">
-                <BoardComponent game={game} cellComponent={GameManagerCell} />
+                <BoardComponent
+                  game={game}
+                  cellComponent={GameManagerCell}
+                  reverse={isWhitePlayer(game, currentUser?._id as Id<"users">)}
+                />
               </div>
             </DndContext>
           </GameContext.Provider>

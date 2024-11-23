@@ -32,7 +32,9 @@ const BoardListCell = ({ rowIndex, columnIndex, cell }: BoardCellProps) => {
         (rowIndex + columnIndex) % 2 === 0 ? "bg-orange-200" : "bg-orange-700"
       }`}
     >
-      {isPiece(cell) && <Piece id={cell} className="text-xl" />}
+      {isPiece(cell) && (
+        <Piece id={cell} className="z-0 ~@[2rem]/[4rem]:~text-base/4xl" />
+      )}
       {!isPiece(cell) && cell}
     </Cell>
   );
@@ -40,7 +42,7 @@ const BoardListCell = ({ rowIndex, columnIndex, cell }: BoardCellProps) => {
 
 const GameCard = ({ game }: GameCardProps) => {
   return (
-    <Link href={`/game/${game._id}`}>
+    <Link href={`/game/${game._id}`} prefetch={true}>
       <div className="relative aspect-square rounded-xl cursor-pointer transition-transform hover:scale-105">
         <div className="absolute top-0 left-0 right-0 z-10 p-2 bg-background/50 backdrop-blur-sm text-foreground">
           <div className="text-sm">

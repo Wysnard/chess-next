@@ -27,7 +27,7 @@ export default function History({ game }: { game: Doc<"games"> }) {
           return (
             <div
               key={`history-${index}`}
-              className="flex items-center gap-2 justify-between"
+              className="flex items-center gap-2 justify-between hover:bg-muted rounded-md"
             >
               {fromIdToPiece(piece as Piece)} {fromIndexToLetter(toColumn)}
               {toRow + 1}

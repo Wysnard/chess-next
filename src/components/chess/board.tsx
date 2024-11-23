@@ -1,3 +1,4 @@
+import { zip } from "radash";
 import { Doc } from "../../../convex/_generated/dataModel";
 import Cell, { CellProps } from "./cell";
 import { Cell as CellType } from "../../engine/pieces";
@@ -5,6 +6,8 @@ import { Cell as CellType } from "../../engine/pieces";
 export type BoardCellProps = CellProps & {
   rowIndex: number;
   columnIndex: number;
+  displayedRowIndex: number;
+  displayedColumnIndex: number;
   cell: CellType;
 };
 
@@ -27,26 +30,51 @@ export const defaultCellComponent = ({
 export type BoardProps = {
   game: Doc<"games">;
   cellComponent?: React.ComponentType<BoardCellProps>;
+  reverse?: boolean;
 };
 
 export const Board = ({
   game,
   cellComponent: CellComponent = defaultCellComponent,
+  reverse = false,
 }: BoardProps) => {
   return (
     <div className="flex flex-col aspect-square">
-      {game.board.map((row, rowIndex) => (
-        <div key={`row-${rowIndex}`} className="flex flex-row">
-          {row.map((cell, columnIndex) => (
-            <CellComponent
-              key={`cell-${rowIndex}-${columnIndex}`}
-              rowIndex={rowIndex}
-              columnIndex={columnIndex}
-              cell={cell as CellType}
-            />
-          ))}
-        </div>
-      ))}
+      {!reverse &&
+        game.board.map((row, rowIndex) => (
+          <div key={`row-${rowIndex}`} className="flex flex-row">
+            {row.map((cell, columnIndex) => (
+              <CellComponent
+                key={`cell-${rowIndex}-${columnIndex}`}
+                rowIndex={rowIndex}
+                columnIndex={columnIndex}
+                displayedRowIndex={rowIndex}
+                displayedColumnIndex={columnIndex}
+                cell={cell as CellType}
+              />
+            ))}
+          </div>
+        ))}
+      {reverse &&
+        zip(
+          game.board.toReversed(),
+          game.board.map((_, rowIndex) => rowIndex).toReversed()
+        ).map(([row, rowIndex], displayedRowIndex) => {
+          return (
+            <div key={`row-${rowIndex}`} className="flex flex-row">
+              {row.map((cell, columnIndex) => (
+                <CellComponent
+                  key={`cell-${rowIndex}-${columnIndex}`}
+                  rowIndex={rowIndex}
+                  columnIndex={columnIndex}
+                  displayedRowIndex={displayedRowIndex}
+                  displayedColumnIndex={columnIndex}
+                  cell={cell as CellType}
+                />
+              ))}
+            </div>
+          );
+        })}
     </div>
   );
 };

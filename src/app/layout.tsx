@@ -2,8 +2,13 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { ConvexClientProvider } from "../providers/ConvexClientProvider";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { Toaster } from "../components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Chess Next",
@@ -23,7 +28,9 @@ export default function RootLayout({
         <html lang="en">
           <body>
             <SidebarProvider>
+              <Toaster closeButton />
               <AppSidebar />
+              <SidebarTrigger className="fixed top-4 left-4 z-50 block md:hidden" />
               <SidebarInset>{children}</SidebarInset>
             </SidebarProvider>
           </body>

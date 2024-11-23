@@ -20,9 +20,10 @@ export default function GameSideBar({
       collapsible="none"
       className="sticky hidden lg:flex top-0 h-svh border-l bg-background"
     >
-      <SidebarHeader>Game Manager</SidebarHeader>
-      <SidebarContent>
+      <SidebarHeader>
         <GameState game={game} />
+      </SidebarHeader>
+      <SidebarContent>
         <History game={game} />
       </SidebarContent>
       <SidebarFooter>

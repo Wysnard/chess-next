@@ -39,7 +39,7 @@ export default function GameDialogue(
             </Label>
             <Input
               id="link"
-              defaultValue={`${window.location.origin}/game/${props.game._id}`}
+              defaultValue={`${process.env.NEXT_PUBLIC_APP_URL}/game/${props.game._id}`}
               readOnly
             />
           </div>
