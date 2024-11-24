@@ -1,6 +1,11 @@
-import { internalMutation, query, QueryCtx } from "./_generated/server";
+import { action, internalMutation, query, QueryCtx } from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
+import { createClerkClient } from "@clerk/backend";
+
+const clerkClient = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
 
 export const current = query({
   args: {},
@@ -75,5 +80,12 @@ export const get = query({
   args: { id: v.id("users") },
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id);
+  },
+});
+
+export const getClerkUser = action({
+  args: { id: v.string() },
+  handler: async (ctx, { id }) => {
+    return clerkClient.users.getUser(id);
   },
 });
