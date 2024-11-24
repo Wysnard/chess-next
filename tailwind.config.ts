@@ -12,7 +12,9 @@ const config: Config = {
     extract,
   },
   theme: {
-    screens,
+    screens: {
+      ...screens,
+    },
     fontSize,
     extend: {
       colors: {

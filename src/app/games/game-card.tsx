@@ -1,13 +1,13 @@
-"use client";
+import { Board } from "../../components/chess/board";
 
-import { Preloaded, usePreloadedQuery, useQuery } from "convex/react";
-import Link from "next/link";
-import { api } from "../../../convex/_generated/api";
 import { Doc, Id } from "../../../convex/_generated/dataModel";
-import Board, { BoardCellProps } from "../../components/chess/board";
+import Link from "next/link";
 import Cell from "../../components/chess/cell";
-import Piece from "../../components/chess/piece";
 import { isPiece } from "../../engine/pieces";
+import Piece from "../../components/chess/piece";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { BoardCellProps } from "../../components/chess/board";
 
 type GameCardProps = {
   game: Doc<"games">;
@@ -33,14 +33,14 @@ const BoardListCell = ({ rowIndex, columnIndex, cell }: BoardCellProps) => {
       }`}
     >
       {isPiece(cell) && (
-        <Piece id={cell} className="z-0 ~@[2rem]/[4rem]:~text-base/4xl" />
+        <Piece id={cell} className="z-0 ~@[1rem]/[4rem]:~text-xl/4xl" />
       )}
       {!isPiece(cell) && cell}
     </Cell>
   );
 };
 
-const GameCard = ({ game }: GameCardProps) => {
+export const GameCard = ({ game }: GameCardProps) => {
   return (
     <Link href={`/game/${game._id}`} prefetch={true}>
       <div className="relative aspect-square rounded-xl cursor-pointer transition-transform hover:scale-105">
@@ -62,19 +62,3 @@ const GameCard = ({ game }: GameCardProps) => {
     </Link>
   );
 };
-
-export type GamesListProps = {
-  preloadedGames: Preloaded<typeof api.games.list>;
-};
-
-export default function GamesList({ preloadedGames }: GamesListProps) {
-  const games = usePreloadedQuery(preloadedGames);
-
-  return (
-    <div className="grid auto-rows-min gap-4 md:grid-cols-5">
-      {games.map((game) => (
-        <GameCard key={game._id} game={game} />
-      ))}
-    </div>
-  );
-}

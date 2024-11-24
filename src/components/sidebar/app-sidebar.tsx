@@ -28,7 +28,7 @@ const data: AppSidebarData = {
       items: [
         {
           title: "Your active games",
-          url: "/games",
+          url: "/games/actives",
         },
         {
           title: "Create a game",
@@ -36,7 +36,7 @@ const data: AppSidebarData = {
         },
         {
           title: "Join a game",
-          url: "#",
+          url: "/games/join",
         },
         {
           title: "Play a bot",

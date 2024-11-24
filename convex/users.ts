@@ -15,6 +15,7 @@ export const upsertFromClerk = internalMutation({
     const userAttributes = {
       name: `${data.username}`,
       externalId: data.id,
+      imageUrl: data.has_image ? data.image_url : undefined,
       games: [],
     };
 

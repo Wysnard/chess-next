@@ -6,6 +6,7 @@ export default defineSchema({
     name: v.string(),
     externalId: v.string(),
     games: v.array(v.id("games")),
+    imageUrl: v.optional(v.string()),
   }).index("byExternalId", ["externalId"]),
   games: defineTable({
     board: v.array(v.array(v.string())),
@@ -20,5 +21,5 @@ export default defineSchema({
         to: v.array(v.number()),
       })
     ),
-  }),
+  }).index("by_players", ["players"]),
 });

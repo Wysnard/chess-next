@@ -25,9 +25,7 @@ export const get = query({
       .filter((q) => q.eq(q.field("_id"), args.gameId))
       .first();
 
-    if (!game) {
-      throw new Error("Game not found");
-    }
+    if (!game) throw new Error("Game not found");
 
     return game;
   },
@@ -41,6 +39,33 @@ export const list = query({
     const result = await ctx.db.query("games").collect();
 
     return result.filter((game) => game.players.includes(identity._id));
+  },
+});
+
+export const listActiveGames = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await getCurrentUserOrThrow(ctx);
+
+    const list = await ctx.db
+      .query("games")
+      .filter((q) => q.eq(q.field("state"), "playing"))
+      .collect();
+
+    return list.filter((game) => game.players.includes(identity._id));
+  },
+});
+
+export const listJoinableGames = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await getCurrentUserOrThrow(ctx);
+    const list = await ctx.db
+      .query("games")
+      .filter((q) => q.eq(q.field("state"), "waiting"))
+      .collect();
+
+    return list.filter((game) => !game.players.includes(identity._id));
   },
 });
 
@@ -120,6 +145,11 @@ export const play = zMutation({
       throw new ConvexError({
         reason: "GameNotFound",
         message: `Game ${args.gameId} not found`,
+      });
+    if (game.state === "ended")
+      throw new ConvexError({
+        reason: "GameEnded",
+        message: `Game ${args.gameId} has ended`,
       });
     if (game.state !== "playing")
       throw new ConvexError({

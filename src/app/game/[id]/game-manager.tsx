@@ -136,7 +136,6 @@ export default function GameManager({ preloadedGame }: GameManagerProps) {
   const [active, setActive] = useState<DragStartEvent["active"] | null>(null);
   const { currentUser } = useCurrentUser();
   const game = usePreloadedQuery(preloadedGame);
-  const join = useMutation(api.games.join);
   const play = useMutation(api.games.play).withOptimisticUpdate(
     (localStore, args) => {
       const currentValue = localStore.getQuery(api.games.get, {
@@ -148,13 +147,6 @@ export default function GameManager({ preloadedGame }: GameManagerProps) {
     }
   );
   const possibleMovesDict = useMemo(() => dictAllPossibleMoves(game), [game]);
-
-  useEffect(() => {
-    if (!currentUser) return;
-    if (game.players.includes(currentUser._id as Id<"users">)) return;
-    if (game.state !== "waiting") return;
-    join({ gameId: game._id });
-  }, [game, currentUser, join]);
 
   return (
     <SidebarProvider>
