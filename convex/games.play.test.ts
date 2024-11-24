@@ -10,11 +10,13 @@ const insert2Users = async (t: TestConvex<typeof schema>) => {
   await t.run(async (ctx) => {
     return Promise.all([
       ctx.db.insert("users", {
+        type: "user",
         name: "test1",
         externalId: "test1",
         games: [],
       }),
       ctx.db.insert("users", {
+        type: "user",
         name: "test2",
         externalId: "test2",
         games: [],
@@ -157,6 +159,7 @@ test("cannot play if the game is not in progress", async () => {
   const t = convexTest(schema);
   await t.run(async (ctx) => {
     await ctx.db.insert("users", {
+      type: "user",
       name: "test1",
       externalId: "test1",
       games: [],

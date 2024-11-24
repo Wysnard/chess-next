@@ -8,6 +8,7 @@ test("create a game", async () => {
   const t = convexTest(schema);
   await t.run(async (ctx) => {
     ctx.db.insert("users", {
+      type: "user",
       name: "test",
       externalId: "test",
       games: [],

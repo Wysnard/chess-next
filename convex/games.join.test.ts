@@ -9,6 +9,7 @@ test("join a game", async () => {
   const t = convexTest(schema);
   await t.run(async (ctx) => {
     ctx.db.insert("users", {
+      type: "user",
       name: "test",
       externalId: "test",
       games: [],
@@ -31,11 +32,13 @@ test("two players join a game", async () => {
   const t = convexTest(schema);
   await t.run(async (ctx) => {
     await ctx.db.insert("users", {
+      type: "user",
       name: "test1",
       externalId: "test1",
       games: [],
     });
     await ctx.db.insert("users", {
+      type: "user",
       name: "test2",
       externalId: "test2",
       games: [],
@@ -70,6 +73,7 @@ test("cannot join a game if already joined", async () => {
   const t = convexTest(schema);
   await t.run(async (ctx) => {
     await ctx.db.insert("users", {
+      type: "user",
       name: "test",
       externalId: "test",
       games: [],
@@ -85,6 +89,7 @@ test("cannot join a game if it is not waiting", async () => {
   const t = convexTest(schema);
   await t.run(async (ctx) => {
     await ctx.db.insert("users", {
+      type: "user",
       name: "test",
       externalId: "test",
       games: [],
@@ -112,11 +117,13 @@ test("cannot join a game if it is full", async () => {
   const t = convexTest(schema);
   await t.run(async (ctx) => {
     await ctx.db.insert("users", {
+      type: "user",
       name: "test1",
       externalId: "test1",
       games: [],
     });
     await ctx.db.insert("users", {
+      type: "user",
       name: "test2",
       externalId: "test2",
       games: [],
