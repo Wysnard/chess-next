@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
-    type: v.string(),
+    type: v.union(v.literal("user"), v.literal("bot"), v.literal("admin")),
     name: v.string(),
     externalId: v.optional(v.string()),
     games: v.array(v.id("games")),
@@ -18,7 +18,11 @@ export default defineSchema({
     board: v.array(v.array(v.string())),
     players: v.array(v.id("users")),
     turn: v.number(),
-    state: v.string(),
+    state: v.union(
+      v.literal("waiting"),
+      v.literal("playing"),
+      v.literal("ended")
+    ),
     winner: v.optional(v.id("users")),
     history: v.array(
       v.object({
@@ -27,5 +31,7 @@ export default defineSchema({
         to: v.array(v.number()),
       })
     ),
-  }).index("by_players", ["players"]),
+  })
+    .index("by_players", ["players"])
+    .index("by_state", ["state"]),
 });

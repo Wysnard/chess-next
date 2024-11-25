@@ -14,6 +14,7 @@ import { move } from "../src/engine/move";
 import { getCurrentUserOrThrow } from "./users";
 import { dictAllPossibleMoves } from "../src/engine/dict-all-possible-moves";
 import { checkFrom } from "../src/engine/check-from";
+import { Doc } from "./_generated/dataModel";
 
 const zMutation = zCustomMutation(mutation, NoOp);
 
@@ -96,7 +97,7 @@ export const join = mutation({
       throw new Error("The player is already in the game");
 
     const newPlayers = shuffle([...game.players, user._id]);
-    const newGame = {
+    const newGame: Doc<"games"> = {
       ...game,
       players: newPlayers,
       state: newPlayers.length === 2 ? "playing" : "waiting",

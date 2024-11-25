@@ -1,7 +1,6 @@
 import { action, internalMutation, query, QueryCtx } from "./_generated/server";
-import { UserJSON } from "@clerk/backend";
+import { createClerkClient, UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
-import { createClerkClient } from "@clerk/backend";
 
 const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,
@@ -17,7 +16,7 @@ export const current = query({
 export const upsertFromClerk = internalMutation({
   args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
   async handler(ctx, { data }) {
-    const userAttributes = {
+    const userAttributes: Parameters<typeof ctx.db.insert>[1] = {
       type: "user",
       name: `${data.username}`,
       externalId: data.id,
