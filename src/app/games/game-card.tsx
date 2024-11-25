@@ -18,10 +18,10 @@ const PlayerVersus = ({ playerIds }: { playerIds: Id<"users">[] }) => {
   const player2 = useQuery(api.users.get, { id: playerIds[1] });
 
   return (
-    <>
+    <div className="flex items-center gap-2 text-sm opacity-75">
       <span className="font-bold">{player1?.name}</span> vs{" "}
       <span className="font-bold">{player2?.name}</span>
-    </>
+    </div>
   );
 };
 
@@ -53,9 +53,9 @@ export const GameCard = ({ game }: GameCardProps) => {
           {game.players.length == 2 && (
             <PlayerVersus playerIds={game.players} />
           )}
-          <div className="text-xs opacity-75">
-            {game.players.length} player{game.players.length !== 1 ? "s" : ""}
-          </div>
+          {game.state === "playing" && game.players.length === 1 && (
+            <div className="text-xs opacity-75">local game</div>
+          )}
         </div>
         <Board game={game} cellComponent={BoardListCell} />
       </div>

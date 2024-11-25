@@ -18,6 +18,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export type NavMainProps = {
   items: {
@@ -32,6 +33,8 @@ export type NavMainProps = {
 };
 
 export function NavMain({ items }: NavMainProps) {
+  const pathName = usePathname();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -56,7 +59,10 @@ export function NavMain({ items }: NavMainProps) {
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <Link href={subItem.url}>
+                        <Link
+                          href={subItem.url}
+                          className={`${pathName === subItem.url && "font-bold"}`}
+                        >
                           <span>{subItem.title}</span>
                         </Link>
                       </SidebarMenuSubButton>

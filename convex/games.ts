@@ -50,10 +50,29 @@ export const listActiveGames = query({
 
     const list = await ctx.db
       .query("games")
-      .filter((q) => q.eq(q.field("state"), "playing"))
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("state"), "playing"),
+          q.eq(q.field("state"), "waiting")
+        )
+      )
       .collect();
 
     return list.filter((game) => game.players.includes(identity._id));
+  },
+});
+
+export const listWatchableGames = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await getCurrentUserOrThrow(ctx);
+
+    const list = await ctx.db
+      .query("games")
+      .withIndex("by_state", (q) => q.eq("state", "playing"))
+      .collect();
+
+    return list.filter((game) => !game.players.includes(identity._id));
   },
 });
 

@@ -94,7 +94,7 @@ const data: AppSidebarData = {
         },
         {
           title: "Games",
-          url: "#",
+          url: "/games/watch",
         },
       ],
     },
