@@ -8,6 +8,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "../components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -27,12 +28,19 @@ export default function RootLayout({
       <ConvexClientProvider>
         <html lang="en">
           <body>
-            <SidebarProvider>
-              <Toaster closeButton />
-              <AppSidebar />
-              <SidebarTrigger className="fixed top-4 left-4 z-50 block md:hidden" />
-              <SidebarInset>{children}</SidebarInset>
-            </SidebarProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <SidebarProvider>
+                <Toaster closeButton />
+                <AppSidebar />
+                <SidebarTrigger className="fixed top-4 left-4 z-50 block md:hidden" />
+                <SidebarInset>{children}</SidebarInset>
+              </SidebarProvider>
+            </ThemeProvider>
           </body>
         </html>
       </ConvexClientProvider>

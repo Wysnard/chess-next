@@ -1,5 +1,7 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
 const LoadingGameCard = () => {
-  return <div className="aspect-square rounded-xl bg-muted animate-pulse" />;
+  return <Skeleton className="aspect-square rounded-xl" />;
 };
 
 export default function Loading() {

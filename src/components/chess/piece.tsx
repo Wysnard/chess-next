@@ -17,7 +17,7 @@ const Piece = forwardRef<
       ref={ref}
       {...props}
       className={mytwMerge(
-        "z-10 aspect-square ~@[3rem]/[8rem]:~text-[3.2rem]/9xl",
+        "z-10 aspect-square ~@[3rem]/[8rem]:~text-[3.2rem]/9xl text-black",
         props.className
       )}
     >

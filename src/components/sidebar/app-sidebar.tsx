@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import NavHeader from "./nav-header";
 import AppSidebarTrigger from "./app-sidebar-trigger";
+import NavThemeToggle from "./nav-theme-toggle";
 
 export type AppSidebarData = {
   navMain: NavMainProps["items"];
@@ -112,6 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <AppSidebarTrigger />
+        <NavThemeToggle />
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
