@@ -118,10 +118,10 @@ const GameManagerCell = ({
         />
       )}
       {isPossibleMove && isPiece(cell) && (
-        <Circle className="text-primary/80 font-extrabold absolute ~@[2rem]/[6rem]:~h-8/20 ~@[2rem]/[6rem]:~w-8/20 z-10" />
+        <Circle className="text-black/80 font-extrabold absolute ~@[2rem]/[6rem]:~h-8/20 ~@[2rem]/[6rem]:~w-8/20 z-10" />
       )}
       {isPossibleMove && !isPiece(cell) && (
-        <Dot className="text-primary/80 font-extrabold absolute ~@[2rem]/[6rem]:~h-20/24 ~@[4rem]/[6rem]:~w-20/24 z-10" />
+        <Dot className="text-black/80 font-extrabold absolute ~@[2rem]/[6rem]:~h-20/24 ~@[4rem]/[6rem]:~w-20/24 z-10" />
       )}
     </Cell>
   );

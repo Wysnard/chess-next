@@ -1,12 +1,12 @@
 import { ModeToggle } from "@/components/theme-toggle";
-import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton } from "@/components/ui/sidebar";
 
 export default function NavThemeToggle() {
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuButton asChild>
         <ModeToggle />
-      </SidebarMenuItem>
+      </SidebarMenuButton>
     </SidebarMenu>
   );
 }

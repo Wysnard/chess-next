@@ -1,8 +1,8 @@
 import { useState, forwardRef } from "react";
+import { CheckIcon } from "lucide-react";
+import { ClipboardIcon } from "lucide-react";
 import { Button, ButtonProps } from "./ui/button";
 import { cn } from "../lib/utils";
-import { CheckIcon } from "@radix-ui/react-icons";
-import { ClipboardIcon } from "lucide-react";
 
 type CopyButtonProps = ButtonProps;
 

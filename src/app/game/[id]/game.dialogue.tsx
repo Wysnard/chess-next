@@ -1,6 +1,5 @@
 "use client";
 
-import { Copy } from "lucide-react";
 import { ComponentProps } from "react";
 import { useMutation } from "convex/react";
 import { Button } from "@/components/ui/button";
@@ -15,9 +14,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import CopyButton from "@/components/copy-button";
 import { api } from "../../../../convex/_generated/api";
 import { Doc } from "../../../../convex/_generated/dataModel";
-import CopyButton from "../../../components/copy-button";
 
 export default function GameDialogue(
   props: { game: Doc<"games"> } & ComponentProps<typeof Dialog>
