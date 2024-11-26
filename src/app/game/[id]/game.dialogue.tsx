@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "../../../../convex/_generated/api";
 import { Doc } from "../../../../convex/_generated/dataModel";
+import CopyButton from "../../../components/copy-button";
 
 export default function GameDialogue(
   props: { game: Doc<"games"> } & ComponentProps<typeof Dialog>
@@ -43,7 +44,7 @@ export default function GameDialogue(
               readOnly
             />
           </div>
-          <Button
+          <CopyButton
             type="submit"
             size="sm"
             className="px-3"
@@ -53,10 +54,7 @@ export default function GameDialogue(
                 window.location.origin + "/game/" + props.game._id
               );
             }}
-          >
-            <span className="sr-only">Copy</span>
-            <Copy />
-          </Button>
+          />
         </div>
         <DialogFooter className="sm:justify-start">
           <DialogClose asChild>
