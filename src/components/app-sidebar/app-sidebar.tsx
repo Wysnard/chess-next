@@ -3,8 +3,8 @@
 import * as React from "react";
 import { BookOpen, Puzzle, SquareTerminal, TvMinimal } from "lucide-react";
 
-import { NavMain, NavMainProps } from "@/components/sidebar/nav-main";
-import { NavUser } from "@/components/sidebar/nav-user";
+import { NavMain, NavMainProps } from "@/components/app-sidebar/nav-main";
+import { NavUser } from "@/components/app-sidebar/nav-user";
 import {
   Sidebar,
   SidebarContent,
