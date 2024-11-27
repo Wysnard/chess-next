@@ -10,7 +10,7 @@ export default async function GamePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const id = (await params).id;
+  const { id } = await params;
   let game = await fetchQuery(api.games.get, { gameId: id as Id<"games"> });
   const token = await getAuthToken();
   const currentUser = await fetchQuery(api.users.current, {}, { token });
